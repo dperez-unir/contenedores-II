@@ -1,33 +1,44 @@
 version: '3.8'
 services:
   app:
+    #cómo construir la imagen
     build:
       context: .
       dockerfile: Dockerfile
+    #qué puertos expone
     ports:
       - "3000:3000"
+    #se debe iniciar antes el servicio db
     depends_on:
       - db
+    # variable de entorno del contenedor para indicar que el acceso a la BBDD es con el host db. Se utiliza en la
+    # cadena de conexión del módulo db.js
     environment:
       - DB_HOST=db
-#    volumes:
-#      - .:/usr/src/app
+    # conecta el servicio con la red app-network, compartida con la BBDD
     networks:
       - app-network
   db:
+    # imagen de Mongo que se utilizará
     image: mongo:7.0
+    # variables de entorno de usuario, password y BBDD que se utilizarán en la cadena de conexión junto al nombre del
+    # host
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: admin
+    # volumen en el que almacenará los datos
     volumes:
       - mongodb_data:/data/db
+    # red compartida con la aplicación
     networks:
       - app-network
 
 networks:
+  # red de tipo bridge que permite que los contenedores se comuniquen entre sí
   app-network:
     driver: bridge
 
+# volumen para la persistencia de datos
 volumes:
   mongodb_data:
