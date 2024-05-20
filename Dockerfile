@@ -1,20 +1,20 @@
-# Usar una imagen base oficial de Node.js
-FROM node:16
+#Verisón ligera y con soporte LTS
+FROM node:16-alpine
 
-# Crear y establecer el directorio de trabajo
+# Se establece el el directorio de trabajo habitual
 WORKDIR /usr/src/app
 
-# Copiar los archivos de paquete para la instalación de dependencias
+# Se copian los archivos de configuración de node
 COPY package*.json ./
 
-# Instalar las dependencias de Node.js
-RUN npm install
+# Se instala lo necesario para ejecutar, eliminando la parte necesaria para el desarrollo, y se limpia la caché
+RUN npm install --production && npm cache clean --force
 
-# Copiar todos los archivos de la aplicación al directorio de trabajo
+# Se copian los ficheros específicos de la aplicación
 COPY node/ ./
 
-# Exponer el puerto que usará la aplicación
+# Se expone el puerto 3000
 EXPOSE 3000
 
-# Comando para ejecutar la aplicación
+# Finalmente se ejecuta la aplicación
 CMD ["node", "app.js"]
